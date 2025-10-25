@@ -6,6 +6,7 @@
   --shadow: rgba(0, 0, 0, 0.1);
 }
 
+/* Базовые */
 body {
   font-family: "Manrope", sans-serif;
   color: var(--dark);
@@ -14,6 +15,7 @@ body {
   line-height: 1.6;
 }
 
+/* Шапка */
 header {
   display: flex;
   justify-content: space-between;
@@ -26,15 +28,11 @@ header {
   top: 0;
   z-index: 100;
 }
-
 header img {
   height: 48px;
   transition: transform 0.2s ease;
 }
-
-header img:hover {
-  transform: scale(1.05);
-}
+header img:hover { transform: scale(1.05); }
 
 nav a {
   margin-left: 1.2rem;
@@ -43,23 +41,19 @@ nav a {
   font-weight: 600;
   transition: color 0.2s ease;
 }
+nav a:hover { color: var(--primary); }
 
-nav a:hover {
-  color: var(--primary);
-}
-
+/* Герой */
 .hero {
   text-align: center;
   padding: 4rem 2rem;
 }
-
 .hero h1 {
   font-size: 2.2rem;
   color: var(--primary);
   margin-bottom: 1rem;
   font-weight: 700;
 }
-
 .cta-buttons button {
   background-color: var(--primary);
   color: #fff;
@@ -72,13 +66,12 @@ nav a:hover {
   font-weight: 600;
   transition: background 0.25s ease, transform 0.2s ease;
 }
-
 .cta-buttons button:hover {
   background-color: #0066cc;
   transform: translateY(-2px);
 }
 
-/* Карточки стеклянного стиля */
+/* === Группы (стеклянные карточки) === */
 .groups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -86,6 +79,14 @@ nav a:hover {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+.groups-loader {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #3b4b5c;
+  opacity: 0.8;
+  font-weight: 600;
 }
 
 .group-card {
@@ -97,77 +98,23 @@ nav a:hover {
   backdrop-filter: blur(10px);
   transition: all 0.25s ease;
   cursor: pointer;
+  position: relative; /* для стрелки */
 }
-
-.group-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 76, 153, 0.2);
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.group-card h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.docs {
-  background-color: rgba(255, 255, 255, 0.5);
-  padding: 2rem;
-  text-align: center;
-}
-
-.docs a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-footer {
-  background-color: var(--primary);
-  color: #fff;
-  text-align: center;
-  padding: 1.5rem;
-  font-size: 0.9rem;
-}
-
-footer a {
-  color: #fff;
-  text-decoration: underline;
-}
-
-/* === Лоадер для блока групп (пока ждём данные из таблицы) === */
-.groups-loader {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2rem 1rem;
-  color: #3b4b5c;
-  opacity: 0.8;
-  font-weight: 600;
-}
-
-/* Абзац внутри карточки группы */
-.group-card p {
-  margin: 0.5rem 0 0;
-  font-size: 0.95rem;
-  opacity: 0.9;
-}
-
-/* Наведение чуть ярче, чтобы “жидкое стекло” ощущалось живее */
 .group-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 36px rgba(0, 76, 153, 0.22);
   background: rgba(255, 255, 255, 0.68);
 }
-
-/* === Группа: разворот карточки на всю ширину сетки === */
-.group-card {
-  position: relative; /* для служебных элементов внутри */
+.group-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
-
-.group-card.expanded {
-  grid-column: 1 / -1;          /* занять всю строку грида */
-  padding-bottom: 1rem;
+.group-card p {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+  overflow-wrap: anywhere;
 }
 
 /* Индикатор разворота (стрелка) */
@@ -180,53 +127,36 @@ footer a {
   opacity: 0.6;
   transition: transform .2s ease, opacity .2s ease;
 }
+.group-card.expanded { grid-column: 1 / -1; padding-bottom: 1rem; }
 .group-card.expanded::after { transform: rotate(180deg); opacity: 0.9; }
 
-/* Контейнер списка профессий внутри раскрытой группы */
-/* === Сетка профессий (5 в ряд на десктопе) === */
+/* === Список профессий внутри раскрытой группы === */
+/* 5 карточек в ряд на десктопе */
 .prof-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* ровно 5 карточек в ряд */
+  grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
   margin-top: 1rem;
   align-items: stretch;
 }
+@media (max-width: 1200px) { .prof-list { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px)  { .prof-list { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .prof-list { grid-template-columns: 1fr; } }
 
-/* Адаптив: планшет — 3 карточки, мобильный — 1 */
-@media (max-width: 1200px) {
-  .prof-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 768px) {
-  .prof-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 480px) {
-  .prof-list {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-
-/* Карточка профессии — тоже “жидкое стекло” */
+/* Карточка профессии */
 .prof-card {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
   border-radius: 14px;
   box-shadow: 0 4px 18px rgba(0,0,0,.08);
-  padding: 1rem 1rem 0.9rem;
+  padding: 0.9rem 1rem;
   transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-  cursor: default; /* это не кнопка, кнопку делаем ниже */
 }
 .prof-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(0, 76, 153, .18);
   background: rgba(255, 255, 255, 0.75);
 }
-
 .prof-card h4 {
   margin: 0 0 .4rem 0;
   font-size: 1.05rem;
@@ -236,9 +166,10 @@ footer a {
   margin: 0 0 .8rem 0;
   font-size: .95rem;
   opacity: .9;
+  overflow-wrap: anywhere;
 }
 
-/* Кнопка “Подробнее” */
+/* Кнопка */
 .btn {
   display: inline-block;
   padding: .55rem .9rem;
@@ -253,50 +184,141 @@ footer a {
 .btn:hover { background: #f4f8ff; box-shadow: 0 4px 14px rgba(0,76,153,.15); }
 .btn:active { transform: translateY(1px); }
 
-.prof-card { font-size: 0.95rem; padding: 0.8rem 0.9rem; }
-
-/* ======= Страница профессии ======= */
-.profession-container {
-  max-width: 900px;
-  margin: 3rem auto;
+/* Документация и подвал */
+.docs {
+  background-color: rgba(255, 255, 255, 0.5);
   padding: 2rem;
-  background: rgba(255,255,255,0.5);
+  text-align: center;
+}
+.docs a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+footer {
+  background-color: var(--primary);
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
+}
+footer a { color: #fff; text-decoration: underline; }
+
+/* ======= Страница профессии (новая разметка) ======= */
+.profession-page {
+  max-width: 1100px;
+  margin: 2.5rem auto 4rem;
+  padding: 0 1rem;
+}
+.glass {
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 28px rgba(17, 17, 17, 0.08);
+  border: 1px solid rgba(255,255,255,.35);
 }
 
-.profession-content h1 {
+/* Карточка профессии */
+.profession-card {
+  padding: 2rem 2rem 2.2rem;
+  transition: box-shadow .3s ease, transform .3s ease, opacity .35s ease;
+  opacity: 1;
+}
+.profession-card.appear { animation: profFade .5s ease both; }
+@keyframes profFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Заголовок и группа */
+.prof-header { margin-bottom: 1.2rem; }
+.prof-title {
+  font-size: 2.2rem;
+  line-height: 1.25;
   color: var(--primary);
+  margin: 0 0 .4rem 0;
+  font-weight: 800;
+}
+.prof-group {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   margin-bottom: 1rem;
-  font-size: 2rem;
 }
-
-.profession-content .short-desc {
-  font-size: 1.1rem;
-  opacity: 0.9;
-  margin-bottom: 1.8rem;
-}
-
-.profession-content h2 {
-  color: var(--primary);
-  margin-top: 1.5rem;
-}
-
-.about, .recommend {
-  margin-bottom: 1.5rem;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.recommend {
-  background: rgba(0,76,153,0.08);
-  border-left: 4px solid var(--primary);
-  padding: 1rem 1.2rem;
-  border-radius: 8px;
-}
-
-.back-btn {
-  margin-top: 2rem;
+.group-chip {
   display: inline-block;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  background: rgba(0,76,153,.1);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .02em;
+}
+.group-name { font-weight: 700; opacity: .9; }
+.prof-short {
+  font-size: 1.06rem;
+  opacity: .95;
+  margin: .4rem 0 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* Разделы */
+.prof-section {
+  margin-top: 1.2rem;
+  padding-top: .8rem;
+}
+.prof-section h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+  margin: 0 0 .4rem 0;
+}
+.prof-section p {
+  margin: 0;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Рекомендации — заметный блок */
+.prof-recommend {
+  margin-top: 1.4rem;
+  background: linear-gradient(180deg, rgba(0,76,153,.12), rgba(0,76,153,.06));
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 8px 26px rgba(0,76,153, .08) inset;
+}
+.prof-recommend .rec-title {
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: .35rem;
+}
+.prof-recommend .rec-body {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Навигация на странице профессии */
+.prof-nav { margin-top: 1.4rem; }
+
+/* Доступность и читабельность ссылок в тексте */
+a:focus-visible,
+button:focus-visible,
+.group-card:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid rgba(0,76,153,.35);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+.prof-section a,
+.prof-recommend a {
+  color: #004c99;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 640px) {
+  .prof-title { font-size: 1.7rem; }
+  .profession-card { padding: 1.2rem 1rem 1.3rem; }
 }
