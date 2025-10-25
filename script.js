@@ -174,3 +174,39 @@ style.textContent = `
   100% { opacity: 1; transform: translateY(0); }
 }`;
 document.head.appendChild(style);
+
+/* ---------- Страница профессии ---------- */
+async function loadProfessionPage() {
+  const container = document.getElementById("profession-content");
+  if (!container) return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const profId = urlParams.get("id");
+
+  if (!profId) {
+    container.innerHTML = `<p class="error">Не указана профессия.</p>`;
+    return;
+  }
+
+  try {
+    const all = await getProfessions();
+    const prof = all.find(p => String(p["ID"]) === String(profId));
+
+    if (!prof) {
+      container.innerHTML = `<p class="error">Профессия не найдена.</p>`;
+      return;
+    }
+
+    // Контент страницы
+    container.innerHTML = `
+      <h1>${prof["Название профессии"]}</h1>
+      <p class="short-desc">${prof["Описание"] || "Описание отсутствует."}</p>
+      ${prof["О профессии"] ? `<div class="about"><h2>О профессии</h2><p>${prof["О профессии"]}</p></div>` : ""}
+      ${prof["Рекомендации"] ? `<div class="recommend"><h2>Рекомендации</h2><p>${prof["Рекомендации"]}</p></div>` : ""}
+      <a href="index.html" class="btn back-btn">← Назад к списку</a>
+    `;
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<p class="error">Ошибка загрузки данных.</p>`;
+  }
+}

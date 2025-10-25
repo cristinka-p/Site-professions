@@ -254,3 +254,49 @@ footer a {
 .btn:active { transform: translateY(1px); }
 
 .prof-card { font-size: 0.95rem; padding: 0.8rem 0.9rem; }
+
+/* ======= Страница профессии ======= */
+.profession-container {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.profession-content h1 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.profession-content .short-desc {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 1.8rem;
+}
+
+.profession-content h2 {
+  color: var(--primary);
+  margin-top: 1.5rem;
+}
+
+.about, .recommend {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.recommend {
+  background: rgba(0,76,153,0.08);
+  border-left: 4px solid var(--primary);
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+}
+
+.back-btn {
+  margin-top: 2rem;
+  display: inline-block;
+}
