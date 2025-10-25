@@ -1,29 +1,21 @@
 /* ==========================================================
-   Подключение данных из Google Sheets (GViz JSON)
-   ВАЖНО: в листах должны быть заголовки столбцов:
-   ─ "Группы":      ID группы | Название группы | Описание
-   ─ "Профессии":   ID | Группа (ID) | Название профессии | Описание |
-                    Общее описание | Примеры ролей и трудовых функций |
-                    Ключевые компетенции / навыки | Рекомендации
-   ========================================================= */
+   Google Sheets (GViz JSON)
+========================================================== */
 
-/* ---------- Вспомогательное: загрузка листа через GViz ---------- */
 async function fetchGviz(sheetName) {
   const SHEET_ID = window.GSHEET_ID;
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url, { cache: "no-store" });
   const text = await res.text();
-  const json = JSON.parse(text.substring(47).slice(0, -2)); // убираем "оболочку"
-  return json.table; // { cols:[], rows:[] }
+  const json = JSON.parse(text.substring(47).slice(0, -2));
+  return json.table;
 }
 
-/* ---------- Преобразование GViz-таблицы в объекты ---------- */
 function gvizToObjects(table) {
   const headers = table.cols.map(c => (c?.label || "").trim());
   const rows = table.rows
     .map(r => (r.c || []).map(cell => (cell && cell.v != null ? String(cell.v) : "")))
     .filter(row => row.some(v => v !== ""));
-
   const maybeHeader = rows[0] || [];
   const sameHeader = maybeHeader.every((v, i) =>
     headers[i] ? v.trim().toLowerCase() === headers[i].trim().toLowerCase() : false
@@ -37,7 +29,6 @@ function gvizToObjects(table) {
   });
 }
 
-/* ---------- Кэши ---------- */
 let professionsCache = null;
 let groupsCache = null;
 
@@ -47,7 +38,6 @@ async function getProfessions() {
   professionsCache = gvizToObjects(table);
   return professionsCache;
 }
-
 async function getGroups() {
   if (groupsCache) return groupsCache;
   const table = await fetchGviz(window.SHEET_GROUPS || "Группы");
@@ -59,15 +49,13 @@ async function getGroups() {
   return groupsCache;
 }
 
-/* ---------- Хелпер безопасного текста ---------- */
 function safe(t) {
-  return String(t || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return String(t || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-/* ---------- Отрисовка групп на главной ---------- */
+/* ==========================================================
+   Главная: рендер групп
+========================================================== */
 async function renderGroups() {
   const wrap = document.querySelector(".groups");
   if (!wrap) return;
@@ -96,16 +84,12 @@ async function renderGroups() {
         ${desc ? `<p>${safe(desc)}</p>` : ""}
       `;
 
-      // Обработчик клика/Enter — раскрыть/свернуть
       const toggle = async () => {
         const expanded = card.classList.toggle("expanded");
         card.setAttribute("aria-expanded", expanded ? "true" : "false");
 
         const exists = card.querySelector(".prof-list");
-        if (!expanded && exists) {
-          exists.remove();
-          return;
-        }
+        if (!expanded && exists) { exists.remove(); return; }
 
         if (expanded && !exists) {
           const list = document.createElement("div");
@@ -116,8 +100,7 @@ async function renderGroups() {
           const all = await getProfessions();
           const items = all.filter(p => String(p["Группа (ID)"]) === String(id));
 
-          const clip = (t, n = 140) =>
-            (t || "").length > n ? (t || "").slice(0, n).trim() + "…" : (t || "");
+          const clip = (t, n = 140) => (t || "").length > n ? (t || "").slice(0, n).trim() + "…" : (t || "");
 
           list.innerHTML = "";
           items.forEach((p, i) => {
@@ -143,11 +126,10 @@ async function renderGroups() {
             </div>`;
           }
 
-          // Плавный скролл: центрируем раскрытую карточку
+          // Центрируем раскрытую карточку
           setTimeout(() => {
             const rect = card.getBoundingClientRect();
-            const scrollY =
-              window.scrollY + rect.top - window.innerHeight / 2 + rect.height / 2;
+            const scrollY = window.scrollY + rect.top - window.innerHeight / 2 + rect.height / 2;
             window.scrollTo({ top: scrollY, behavior: "smooth" });
           }, 300);
         }
@@ -168,7 +150,7 @@ async function renderGroups() {
   }
 }
 
-/* ---------- Плавная прокрутка по якорям ---------- */
+/* Плавная прокрутка по якорям */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener("click", function (e) {
     e.preventDefault();
@@ -177,12 +159,28 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* ---------- Инициализация главной ---------- */
+/* Кнопка «наверх» */
+function initToTop() {
+  const btn = document.getElementById("toTop");
+  if (!btn) return;
+
+  const toggle = () => {
+    if (window.scrollY > 300) btn.classList.add("to-top--visible");
+    else btn.classList.remove("to-top--visible");
+  };
+  toggle();
+
+  window.addEventListener("scroll", toggle, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+}
+
+/* Инициализация главной */
 document.addEventListener("DOMContentLoaded", () => {
   renderGroups();
+  initToTop();
 });
 
-/* ---------- CSS-анимация (fade-in) ---------- */
+/* Анимация появления */
 const style = document.createElement("style");
 style.textContent = `
 @keyframes fadeIn {
@@ -192,7 +190,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 /* ==========================================================
-   Страница профессии (использует контейнер #profession)
+   Страница профессии (#profession)
 ========================================================== */
 async function loadProfessionPage() {
   const root = document.getElementById("profession");
@@ -200,19 +198,12 @@ async function loadProfessionPage() {
 
   const params = new URLSearchParams(location.search);
   const profId = params.get("id");
-  if (!profId) {
-    root.innerHTML = `<p class="error">Не указана профессия.</p>`;
-    return;
-  }
+  if (!profId) { root.innerHTML = `<p class="error">Не указана профессия.</p>`; return; }
 
   try {
     const [allProf, allGroups] = await Promise.all([getProfessions(), getGroups()]);
     const prof = allProf.find(p => String(p["ID"]) === String(profId));
-
-    if (!prof) {
-      root.innerHTML = `<p class="error">Профессия не найдена.</p>`;
-      return;
-    }
+    if (!prof) { root.innerHTML = `<p class="error">Профессия не найдена.</p>`; return; }
 
     const groupId = String(prof["Группа (ID)"] || "").trim();
     const group = allGroups.find(g => g.id === groupId);
@@ -220,51 +211,55 @@ async function loadProfessionPage() {
 
     const title = safe(prof["Название профессии"]);
     const short = safe(prof["Описание"]);
-    const about = safe(prof["Общее описание"]); // ← колонка из таблицы
+    const about = safe(prof["Общее описание"]);
     const roles = safe(prof["Примеры ролей и трудовых функций"]);
     const skills = safe(prof["Ключевые компетенции / навыки"]);
     const recs  = safe(prof["Рекомендации"]);
 
     root.innerHTML = `
-      <header class="prof-header">
-        <h1 class="prof-title">${title}</h1>
-        <div class="prof-group">
-          <span class="group-chip">Группа:</span>
-          <span class="group-name">${safe(groupName)}</span>
-        </div>
-        ${short ? `<p class="prof-short">${short}</p>` : ``}
-      </header>
+      <main class="profession-page">
+        <article class="profession-card glass" id="prof-card">
+          <header class="prof-header">
+            <h1 class="prof-title">${title}</h1>
+            <div class="prof-group">
+              <span class="group-chip">Группа:</span>
+              <span class="group-name">${safe(groupName)}</span>
+            </div>
+            ${short ? `<p class="prof-short">${short}</p>` : ``}
+          </header>
 
-      <section class="prof-section">
-        <h2>Общее описание</h2>
-        <p>${about || "—"}</p>
-      </section>
+          <section class="prof-section">
+            <h2>Общее описание</h2>
+            <p>${about || "—"}</p>
+          </section>
 
-      <section class="prof-section">
-        <h2>Примеры ролей и трудовых функций</h2>
-        <p>${roles || "—"}</p>
-      </section>
+          <section class="prof-section">
+            <h2>Примеры ролей и трудовых функций</h2>
+            <p>${roles || "—"}</p>
+          </section>
 
-      <section class="prof-section">
-        <h2>Ключевые компетенции / навыки</h2>
-        <p>${skills || "—"}</p>
-      </section>
+          <section class="prof-section">
+            <h2>Ключевые компетенции / навыки</h2>
+            <p>${skills || "—"}</p>
+          </section>
 
-      ${recs ? `
-      <aside class="prof-recommend">
-        <div class="rec-title">Рекомендации</div>
-        <div class="rec-body">${recs}</div>
-      </aside>` : ``}
+          ${recs ? `
+          <aside class="prof-recommend">
+            <div class="rec-title">Рекомендации</div>
+            <div class="rec-body">${recs}</div>
+          </aside>` : ``}
 
-      <div class="prof-nav">
-        <a class="btn" href="index.html#groups">← К списку групп</a>
-      </div>
+          <div class="prof-nav">
+            <a class="btn" href="index.html#groups">← К списку групп</a>
+          </div>
+        </article>
+      </main>
     `;
 
-    // плавное появление карточки
-    root.classList.add("appear");
-    setTimeout(() => root.classList.remove("appear"), 600);
-    setTimeout(() => root.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
+    const card = document.getElementById("prof-card");
+    card.classList.add("appear");
+    setTimeout(() => card.classList.remove("appear"), 600);
+    setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
 
   } catch (err) {
     console.error(err);
