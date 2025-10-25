@@ -3,7 +3,9 @@
    ВАЖНО: в листах должны быть заголовки столбцов:
    ─ "Группы":      ID группы | Название группы | Описание
    ─ "Профессии":   ID | Группа (ID) | Название профессии | Описание | Рекомендации
-   ========================================================= */
+   Все названия — без лишних пробелов, как здесь.
+   Комментарии подробные, чтобы тебе было легко править код.
+========================================================== */
 
 /* ---------- Вспомогательное: загрузка листа через GViz ---------- */
 async function fetchGviz(sheetName) {
@@ -11,16 +13,18 @@ async function fetchGviz(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url, { cache: "no-store" });
   const text = await res.text();
-  const json = JSON.parse(text.substring(47).slice(0, -2)); // убираем "оболочку"
-  return json.table;
+  const json = JSON.parse(text.substring(47).slice(0, -2)); // “снимаем оболочку” GViz
+  return json.table; // { cols:[], rows:[] }
 }
 
-/* ---------- Преобразование GViz-таблицы в объекты ---------- */
+/* ---------- Преобразование GViz-таблицы в объекты по заголовкам ---------- */
 function gvizToObjects(table) {
   const headers = table.cols.map(c => (c?.label || "").trim());
   const rows = table.rows
     .map(r => (r.c || []).map(cell => (cell && cell.v != null ? String(cell.v) : "")))
-    .filter(row => row.some(v => v !== ""));
+    .filter(row => row.some(v => v !== "")); // убрать пустые строки
+
+  // если первая строка совпадает с заголовками — считаем её хедером и убираем
   const maybeHeader = rows[0] || [];
   const sameHeader = maybeHeader.every((v, i) =>
     headers[i] ? v.trim().toLowerCase() === headers[i].trim().toLowerCase() : false
@@ -34,7 +38,7 @@ function gvizToObjects(table) {
   });
 }
 
-/* ---------- Кэш для профессий ---------- */
+/* ---------- Кэш для профессий, чтобы не грузить каждый клик ---------- */
 let professionsCache = null;
 async function getProfessions() {
   if (professionsCache) return professionsCache;
@@ -43,26 +47,28 @@ async function getProfessions() {
   return professionsCache;
 }
 
-/* ---------- Отрисовка групп ---------- */
+/* ---------- Рендер групп на главной ---------- */
 async function renderGroups() {
   const wrap = document.querySelector(".groups");
   if (!wrap) return;
 
+  // показать лоадер
   wrap.innerHTML = `<div class="groups-loader">Загружаем группы…</div>`;
 
   try {
     const table = await fetchGviz(window.SHEET_GROUPS || "Группы");
     const groups = gvizToObjects(table);
-    wrap.innerHTML = "";
+    wrap.innerHTML = ""; // очистить
 
     groups.forEach(g => {
       const id = g["ID группы"] || g["ID"] || "";
       const title = g["Название группы"] || g["Название"] || "Без названия";
       const desc = g["Описание"] || "";
 
+      // Карточка группы
       const card = document.createElement("div");
       card.className = "group-card";
-      card.tabIndex = 0;
+      card.tabIndex = 0; // доступность с клавиатуры
       card.setAttribute("role", "button");
       card.setAttribute("aria-expanded", "false");
       card.dataset.groupId = id;
@@ -72,19 +78,19 @@ async function renderGroups() {
         ${desc ? `<p>${desc}</p>` : ""}
       `;
 
-      /* ---------- Обработчик клика ---------- */
+      // Обработчик клика/Enter — раскрыть/свернуть
       const toggle = async () => {
         const expanded = card.classList.toggle("expanded");
         card.setAttribute("aria-expanded", expanded ? "true" : "false");
 
-        // если свернули — удалить блок профессий
+        // если свернули — убрать список профессий
         const exists = card.querySelector(".prof-list");
         if (!expanded && exists) {
           exists.remove();
           return;
         }
 
-        // если раскрыли — подгрузить профессии
+        // если раскрыли — подгрузить профессии по группе
         if (expanded && !exists) {
           const list = document.createElement("div");
           list.className = "prof-list";
@@ -94,19 +100,19 @@ async function renderGroups() {
           const all = await getProfessions();
           const items = all.filter(p => String(p["Группа (ID)"]) === String(id));
 
+          // Превью: ограничим текст до ~140 символов
           const clip = (t, n = 140) =>
             (t || "").length > n ? (t || "").slice(0, n).trim() + "…" : (t || "");
 
           list.innerHTML = "";
-          items.forEach((p, i) => {
+          items.forEach(p => {
             const pid = p["ID"] || "";
             const name = p["Название профессии"] || "Профессия";
             const short = clip(p["Описание"] || p["Краткое описание"] || "");
-            const link = `profession.html?id=${encodeURIComponent(pid)}`;
+            const link = `profession.html?id=${encodeURIComponent(pid)}`; // на будущее: отдельная страница
 
             const item = document.createElement("div");
             item.className = "prof-card";
-            item.style.animation = `fadeIn 0.4s ease ${i * 0.05}s both`; // 👈 плавное появление
             item.innerHTML = `
               <h4>${name}</h4>
               ${short ? `<p>${short}</p>` : `<p>Описание будет добавлено.</p>`}
@@ -115,31 +121,16 @@ async function renderGroups() {
             list.appendChild(item);
           });
 
+          // Если в таблице пока нет строк для этой группы
           if (!items.length) {
-            list.innerHTML = `<div class="groups-loader" style="opacity:.8">
-              Пока нет данных по профессиям этой группы.
-            </div>`;
+            list.innerHTML = `<div class="groups-loader" style="opacity:.8">Пока нет данных по профессиям этой группы.</div>`;
           }
-
-          // 👇 Плавно прокручиваем к раскрытой карточке
-          setTimeout(() => {
-            const rect = card.getBoundingClientRect();
-            const scrollY =
-              window.scrollY + rect.top - window.innerHeight / 2 + rect.height / 2;
-            window.scrollTo({
-              top: scrollY,
-              behavior: "smooth",
-            });
-          }, 300);
         }
       };
 
       card.addEventListener("click", toggle);
-      card.addEventListener("keydown", e => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          toggle();
-        }
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
       });
 
       wrap.appendChild(card);
@@ -147,17 +138,17 @@ async function renderGroups() {
   } catch (e) {
     console.error("Ошибка загрузки групп:", e);
     wrap.innerHTML = `<div class="groups-loader" style="color:#b00020">
-      Не удалось загрузить группы. Проверьте доступ к таблице (режим: «читатель»).
+      Не удалось загрузить группы. Проверьте доступ к таблице (Доступ по ссылке: Читатель) и названия листов.
     </div>`;
   }
 }
 
-/* ---------- Плавная прокрутка по якорям ---------- */
+/* ---------- Плавная прокрутка по якорям (как было) ---------- */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener("click", function (e) {
+  anchor.addEventListener('click', function (e) {
     e.preventDefault();
-    const t = document.querySelector(this.getAttribute("href"));
-    if (t) t.scrollIntoView({ behavior: "smooth" });
+    const t = document.querySelector(this.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth' });
   });
 });
 
@@ -165,12 +156,3 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 document.addEventListener("DOMContentLoaded", () => {
   renderGroups();
 });
-
-/* ---------- CSS-анимация (fade-in) ---------- */
-const style = document.createElement("style");
-style.textContent = `
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}`;
-document.head.appendChild(style);
