@@ -4,137 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Электронный каталог профориентации — РГСУ</title>
+
+  <!-- Подключаем шрифт и стили -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Минимальная стилизация, чтобы всё сразу выглядело аккуратно */
-
-    :root {
-      --primary: #004c99; /* корпоративный синий РГСУ */
-      --light: #f5f6fa;
-      --dark: #111;
-    }
-
-    body {
-      font-family: "Inter", sans-serif;
-      color: var(--dark);
-      background-color: #fff;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    header img {
-      height: 50px;
-      cursor: pointer;
-    }
-
-    nav a {
-      margin-left: 1.2rem;
-      text-decoration: none;
-      color: var(--dark);
-      font-weight: 500;
-    }
-
-    nav a:hover {
-      color: var(--primary);
-    }
-
-    .hero {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: var(--light);
-    }
-
-    .hero h1 {
-      font-size: 2rem;
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-
-    .cta-buttons {
-      margin-top: 1.5rem;
-    }
-
-    .cta-buttons button {
-      background-color: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 0.8rem 1.6rem;
-      margin: 0.5rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .cta-buttons button:hover {
-      background-color: #0066cc;
-    }
-
-    .groups {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .group-card {
-      border: 2px solid var(--primary);
-      border-radius: 8px;
-      padding: 1.2rem;
-      background-color: #fff;
-      transition: 0.2s;
-      cursor: pointer;
-    }
-
-    .group-card:hover {
-      background-color: var(--light);
-      transform: translateY(-3px);
-    }
-
-    .docs {
-      background-color: var(--light);
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .docs a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    footer {
-      background-color: var(--primary);
-      color: #fff;
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 0.9rem;
-    }
-
-    footer a {
-      color: #fff;
-      text-decoration: underline;
-    }
-  </style>
 </head>
 <body>
   <!-- Шапка -->
   <header>
     <a href="https://rgsu.net" target="_blank">
-      <img src="https://upload.wikimedia.org/wikipedia/ru/4/42/%D0%A0%D0%93%D0%A1%D0%A3_%D0%BB%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.png" alt="РГСУ" />
+      <img src="RGSU_logo.png" alt="РГСУ" />
     </a>
     <nav>
       <a href="index.html">Главная</a>
@@ -157,16 +36,16 @@
 
   <!-- 10 укрупнённых групп -->
   <section id="groups" class="groups">
-    <div class="group-card">1. Производство и технологии</div>
-    <div class="group-card">2. Транспорт и логистика</div>
-    <div class="group-card">3. Информационные технологии</div>
-    <div class="group-card">4. Медицина и здоровье</div>
-    <div class="group-card">5. Педагогика и образование</div>
-    <div class="group-card">6. Экономика и управление</div>
-    <div class="group-card">7. Искусство и дизайн</div>
-    <div class="group-card">8. Юриспруденция и безопасность</div>
-    <div class="group-card">9. Сервис и туризм</div>
-    <div class="group-card">10. Экология и сельское хозяйство</div>
+    <div class="group-card"><h3>Производство и технологии</h3></div>
+    <div class="group-card"><h3>Транспорт и логистика</h3></div>
+    <div class="group-card"><h3>Информационные технологии</h3></div>
+    <div class="group-card"><h3>Медицина и здоровье</h3></div>
+    <div class="group-card"><h3>Педагогика и образование</h3></div>
+    <div class="group-card"><h3>Экономика и управление</h3></div>
+    <div class="group-card"><h3>Искусство и дизайн</h3></div>
+    <div class="group-card"><h3>Юриспруденция и безопасность</h3></div>
+    <div class="group-card"><h3>Сервис и туризм</h3></div>
+    <div class="group-card"><h3>Экология и сельское хозяйство</h3></div>
   </section>
 
   <!-- Документация -->
@@ -183,5 +62,7 @@
     <p>© 2025 Технопарк РГСУ | <a href="mailto:info@rgsu.net">info@rgsu.net</a></p>
     <p>г. Москва, ул. Вильгельма Пика, д. 4, корп. 1</p>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
