@@ -34,19 +34,12 @@
     </div>
   </section>
 
-  <!-- 10 укрупнённых групп -->
-  <section id="groups" class="groups">
-    <div class="group-card"><h3>Производство и технологии</h3></div>
-    <div class="group-card"><h3>Транспорт и логистика</h3></div>
-    <div class="group-card"><h3>Информационные технологии</h3></div>
-    <div class="group-card"><h3>Медицина и здоровье</h3></div>
-    <div class="group-card"><h3>Педагогика и образование</h3></div>
-    <div class="group-card"><h3>Экономика и управление</h3></div>
-    <div class="group-card"><h3>Искусство и дизайн</h3></div>
-    <div class="group-card"><h3>Юриспруденция и безопасность</h3></div>
-    <div class="group-card"><h3>Сервис и туризм</h3></div>
-    <div class="group-card"><h3>Экология и сельское хозяйство</h3></div>
-  </section>
+<!-- ===== 10 укрупнённых групп (данные подтягиваем из Google Sheets) ===== -->
+<section id="groups" class="groups">
+  <!-- Контейнер пустой: карточки вставит JS после загрузки данных -->
+  <div class="groups-loader">Загружаем группы…</div>
+  <noscript>Включите JavaScript, чтобы увидеть список групп.</noscript>
+</section>
 
   <!-- Документация -->
   <section id="docs" class="docs">
@@ -64,5 +57,13 @@
   </footer>
 
   <script src="script.js"></script>
+  <!-- === Конфигурация: ID вашей Google Таблицы (менять тут при необходимости) === -->
+<script>
+  // ID берём из URL Google Sheets: .../spreadsheets/d/ID_ТУТ/edit
+  window.GSHEET_ID = "1eJyocvC47_MoC2fNYycTEjOxmPSxT7UM3-7Du9-dcEA";
+  // Названия листов (можно менять под вашу таблицу)
+  window.SHEET_GROUPS = "Группы";
+  window.SHEET_PROFESSIONS = "Профессии";
+</script>
 </body>
 </html>

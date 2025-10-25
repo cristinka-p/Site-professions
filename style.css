@@ -135,3 +135,27 @@ footer a {
   color: #fff;
   text-decoration: underline;
 }
+
+/* === Лоадер для блока групп (пока ждём данные из таблицы) === */
+.groups-loader {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #3b4b5c;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+/* Абзац внутри карточки группы */
+.group-card p {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Наведение чуть ярче, чтобы “жидкое стекло” ощущалось живее */
+.group-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 36px rgba(0, 76, 153, 0.22);
+  background: rgba(255, 255, 255, 0.68);
+}
