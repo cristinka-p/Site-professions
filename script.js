@@ -23,7 +23,6 @@ function gvizToObjects(table) {
     .map(r => (r.c || []).map(cell => (cell && cell.v != null ? String(cell.v) : "")))
     .filter(row => row.some(v => v !== "")); // убираем пустые строки
 
-  // если первая строка совпадает с заголовками — убираем её
   const maybeHeader = rows[0] || [];
   const sameHeader = maybeHeader.every((v, i) =>
     headers[i] ? v.trim().toLowerCase() === headers[i].trim().toLowerCase() : false
@@ -116,7 +115,7 @@ async function renderGroups() {
 
             const item = document.createElement("div");
             item.className = "prof-card";
-            item.style.animation = `fadeInUp 0.4s ease ${i * 0.05}s both`; // 👈 лёгкое появление с задержкой
+            item.style.animation = `fadeInUp 0.4s ease ${i * 0.05}s both`;
             item.innerHTML = `
               <h4>${name}</h4>
               <p>${short}</p>
@@ -125,11 +124,16 @@ async function renderGroups() {
             list.appendChild(item);
           });
 
-          // если нет профессий
           if (!items.length) {
             list.innerHTML = `<div class="groups-loader" style="opacity:.8">
               Пока нет данных по профессиям этой группы.
             </div>`;
+          }
+
+          // Прокручиваем к раскрытой карточке, если она ниже экрана
+          const rect = card.getBoundingClientRect();
+          if (rect.top < 80 || rect.bottom > window.innerHeight) {
+            card.scrollIntoView({ behavior: "smooth", block: "center" });
           }
         }
       });
@@ -164,5 +168,6 @@ style.textContent = `
 @keyframes fadeInUp {
   0% { opacity: 0; transform: translateY(20px); }
   100% { opacity: 1; transform: translateY(0); }
-}`;
+}
+`;
 document.head.appendChild(style);
