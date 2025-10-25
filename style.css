@@ -182,32 +182,13 @@ footer a {
 }
 .group-card.expanded::after { transform: rotate(180deg); opacity: 0.9; }
 
-/* === Сетка профессий (5 в ряд на десктопе) === */
+/* Контейнер списка профессий внутри раскрытой группы */
 .prof-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* ровно 5 карточек в ряд */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
-  align-items: stretch;
 }
-
-/* Адаптив: планшет — 3 карточки, мобильный — 1 */
-@media (max-width: 1200px) {
-  .prof-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 768px) {
-  .prof-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 480px) {
-  .prof-list {
-    grid-template-columns: 1fr;
-  }
-}
-
 
 /* Карточка профессии — тоже “жидкое стекло” */
 .prof-card {
@@ -219,10 +200,6 @@ footer a {
   transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
   cursor: default; /* это не кнопка, кнопку делаем ниже */
 }
-
-.prof-card { font-size: 0.95rem; padding: 0.8rem 0.9rem; }
-
-
 .prof-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(0, 76, 153, .18);
@@ -254,91 +231,3 @@ footer a {
 }
 .btn:hover { background: #f4f8ff; box-shadow: 0 4px 14px rgba(0,76,153,.15); }
 .btn:active { transform: translateY(1px); }
-
-/* === Анимация плавного раскрытия карточки группы === */
-.group-card {
-  transition: all 0.4s ease;
-  overflow: hidden;
-}
-
-/* Контейнер профессий с плавным открытием */
-.prof-list {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  margin-top: 0;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: all 0.45s ease-in-out;
-}
-
-/* Когда группа раскрыта — показываем профессии */
-.group-card.expanded .prof-list {
-  margin-top: 1rem;
-  opacity: 1;
-  max-height: 600px; /* достаточно для 5 карточек; можно увеличить при необходимости */
-}
-
-/* Адаптив для планшетов и мобильных */
-@media (max-width: 1200px) {
-  .prof-list { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-  .prof-list { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .prof-list { grid-template-columns: 1fr; }
-}
-
-/* === Контейнер всех групп === */
-.groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.2rem;
-  transition: all 0.5s ease;
-}
-
-/* --- Когда одна группа активна (остальные уходят вверх) --- */
-.groups.has-active .group-card:not(.expanded) {
-  transform: translateY(-20px);
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.45s ease-in-out;
-}
-
-/* --- Активная карточка занимает всю ширину и остаётся на месте --- */
-.group-card.expanded {
-  grid-column: 1 / -1;
-  z-index: 10;
-  transition: all 0.5s ease;
-}
-
-/* --- Плавное раскрытие блока профессий внутри --- */
-.prof-list {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  margin-top: 0;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height 0.45s ease, opacity 0.45s ease;
-}
-
-.group-card.expanded .prof-list {
-  margin-top: 1rem;
-  opacity: 1;
-  max-height: 700px;
-}
-
-/* --- Адаптив --- */
-@media (max-width: 1200px) {
-  .prof-list { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-  .prof-list { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .prof-list { grid-template-columns: 1fr; }
-}
