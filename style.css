@@ -183,12 +183,33 @@ footer a {
 .group-card.expanded::after { transform: rotate(180deg); opacity: 0.9; }
 
 /* Контейнер списка профессий внутри раскрытой группы */
+/* === Сетка профессий (5 в ряд на десктопе) === */
 .prof-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(5, 1fr); /* ровно 5 карточек в ряд */
   gap: 1rem;
   margin-top: 1rem;
+  align-items: stretch;
 }
+
+/* Адаптив: планшет — 3 карточки, мобильный — 1 */
+@media (max-width: 1200px) {
+  .prof-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .prof-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .prof-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 
 /* Карточка профессии — тоже “жидкое стекло” */
 .prof-card {
@@ -231,3 +252,5 @@ footer a {
 }
 .btn:hover { background: #f4f8ff; box-shadow: 0 4px 14px rgba(0,76,153,.15); }
 .btn:active { transform: translateY(1px); }
+
+.prof-card { font-size: 0.95rem; padding: 0.8rem 0.9rem; }
